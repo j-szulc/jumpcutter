@@ -81,6 +81,9 @@ else:
     OUTPUT_FILE = inputToOutputFilename(INPUT_FILE)
 
 TEMP_FOLDER = tempfile.mkdtemp()
+
+try:
+
 AUDIO_FADE_ENVELOPE_SIZE = 400 # smooth out transitiion's audio by quickly fading in/out (arbitrary magic number whatever)
 
 command = "ffmpeg -i "+INPUT_FILE+" -qscale:v "+str(FRAME_QUALITY)+" "+TEMP_FOLDER+"/frame%06d.jpg -hide_banner"
@@ -190,6 +193,8 @@ for endGap in range(outputFrame,audioFrameCount):
 
 command = "ffmpeg -framerate "+str(frameRate)+" -i "+TEMP_FOLDER+"/newFrame%06d.jpg -i "+TEMP_FOLDER+"/audioNew.wav -strict -2 "+OUTPUT_FILE
 subprocess.call(command, shell=True)
+
+finally:
 
 deletePath(TEMP_FOLDER)
 
