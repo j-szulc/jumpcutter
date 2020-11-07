@@ -11,6 +11,7 @@ from shutil import copyfile, rmtree
 import os
 import argparse
 from pytube import YouTube
+import tempfile
 
 def downloadFile(url):
     name = YouTube(url).streams.first().download()
@@ -36,14 +37,6 @@ def copyFrame(inputFrame,outputFrame):
 def inputToOutputFilename(filename):
     dotIndex = filename.rfind(".")
     return filename[:dotIndex]+"_ALTERED"+filename[dotIndex:]
-
-def createPath(s):
-    #assert (not os.path.exists(s)), "The filepath "+s+" already exists. Don't want to overwrite it. Aborting."
-
-    try:  
-        os.mkdir(s)
-    except OSError:  
-        assert False, "Creation of the directory %s failed. (The TEMP folder may already exist. Delete or rename it, and try again.)"
 
 def deletePath(s): # Dangerous! Watch out!
     try:  
@@ -87,10 +80,8 @@ if len(args.output_file) >= 1:
 else:
     OUTPUT_FILE = inputToOutputFilename(INPUT_FILE)
 
-TEMP_FOLDER = "TEMP"
+TEMP_FOLDER = tempfile.mkdtemp()
 AUDIO_FADE_ENVELOPE_SIZE = 400 # smooth out transitiion's audio by quickly fading in/out (arbitrary magic number whatever)
-    
-createPath(TEMP_FOLDER)
 
 command = "ffmpeg -i "+INPUT_FILE+" -qscale:v "+str(FRAME_QUALITY)+" "+TEMP_FOLDER+"/frame%06d.jpg -hide_banner"
 subprocess.call(command, shell=True)
